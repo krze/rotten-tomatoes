@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SwiftSpinner
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -16,62 +15,69 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     var movies: [NSDictionary]?
     var refreshControl: UIRefreshControl!
     
+    var refreshErrorView: UIView!
+    var refreshErrorTextView: UITextView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        let tomatoesMoviesURL = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
-//        let request = NSURLRequest(URL: tomatoesMoviesURL)
-//        
-//        SwiftSpinner.show("Loading movies...")
-//        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-//            let json = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary
-//            
-//            if let json = json {
-//                self.movies = json["movies"] as? [NSDictionary]
-//                self.tableView.reloadData()
-//            }
-//        }
-//        SwiftSpinner.hide()
+        // Set up pull to refresh and refresh on load
+        setupRefreshControl()
         refresh(self)
         
         tableView.dataSource = self
         tableView.delegate = self
-        
-        
-        // Pull to Refresh
-        self.refreshControl = UIRefreshControl()
-        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
-        self.tableView.addSubview(refreshControl)
-        
     }
     
-    func showSpinner(spinnerText: String){
-        SwiftSpinner.show(spinnerText)
+    func setupRefreshControl() {
+        // Pull to Refresh
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh", attributes: [NSFontAttributeName: UIFont(name: "Avenir", size:12)!])
+        self.refreshControl.tintColor = UIColor.orangeColor()
+        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.tableView.addSubview(refreshControl)
+
     }
-    func hideSpinner() {
-        SwiftSpinner.hide()
+    
+    func displayRefreshError() {
+        // Create the error view and set the color to red
+        self.refreshErrorView = UIView(frame: self.refreshControl!.bounds)
+        self.refreshErrorView.backgroundColor = UIColor.redColor()
+        self.refreshErrorTextView = UITextView(frame: self.refreshControl!.bounds)
+
+      // Add the text and change the color
+        self.refreshErrorTextView.text = "Error Communicating with the Server\nPlease try again later."
+        self.refreshErrorTextView.textColor = UIColor.whiteColor()
+        self.refreshErrorTextView.textAlignment = .Center
+        self.refreshErrorTextView.backgroundColor = UIColor.clearColor()
+        self.refreshErrorTextView.font = UIFont(name: "Avenir", size:12)!
+        self.refreshErrorView.addSubview(self.refreshErrorTextView)
+        
+        // Ensure it stays inside the pull to refresh view
+        self.refreshErrorView.clipsToBounds = true
+        self.refreshControl!.addSubview(self.refreshErrorView)
     }
+    
+
     
     func refresh(sender:AnyObject) {
         let tomatoesMoviesURL = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
         let request = NSURLRequest(URL: tomatoesMoviesURL)
         
-        showSpinner("Loading movies...")
+        
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             let json = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary
             
             if let json = json {
                 self.movies = json["movies"] as? [NSDictionary]
-                // For the sake of demonstrating the spinner, this timer sleeps for 1 second to emulate downloading network data before reloading the table data. Comment out this line and uncomment the hideSpinner() after it to remove the demo.
-                NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "hideSpinner", userInfo: nil, repeats: false)
-                //hideSpinner()
                 self.tableView.reloadData()
+                self.refreshControl?.endRefreshing()
+            } else {
+                NSTimer.scheduledTimerWithTimeInterval(3.0, target: self, selector: Selector("displayRefreshError"), userInfo: nil, repeats: false)
+                self.refreshControl?.endRefreshing()
             }
         }
 
-        
-        self.refreshControl?.endRefreshing()
     }
     
     override func viewDidAppear(animated: Bool) {

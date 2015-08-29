@@ -53,9 +53,7 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework 'Pods-rotten tomatoes/AFNetworking.framework'
-  install_framework 'Pods-rotten tomatoes/SwiftSpinner.framework'
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework 'Pods-rotten tomatoes/AFNetworking.framework'
-  install_framework 'Pods-rotten tomatoes/SwiftSpinner.framework'
 fi

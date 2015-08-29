@@ -5,7 +5,7 @@ use_frameworks!
 
 target 'rotten tomatoes' do
 	pod "AFNetworking"
-	pod "SwiftSpinner"
+#	pod "SwiftSpinner"
 end
 
 target 'rotten tomatoesTests' do
