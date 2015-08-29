@@ -32,8 +32,20 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.delegate = self
         
-//        self.navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Avenir Heavy", size:20)!]
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(true)
+        var navigationController = self.navigationController
+        var navigationBar = navigationController?.navigationBar
         
+        // Navbar Apearance Properties
+        navigationBar?.barStyle = UIBarStyle.Black
+        navigationBar?.tintColor = UIColor.orangeColor()
+        navigationBar?.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size:20)!]
+        
+        // Navbar Behavior Properties
+        navigationController?.hidesBarsOnSwipe = true
     }
 
     override func didReceiveMemoryWarning() {
