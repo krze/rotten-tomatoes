@@ -14,27 +14,64 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet weak var tableView: UITableView!
     
     var movies: [NSDictionary]?
+    var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+//        let tomatoesMoviesURL = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
+//        let request = NSURLRequest(URL: tomatoesMoviesURL)
+//        
+//        SwiftSpinner.show("Loading movies...")
+//        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
+//            let json = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary
+//            
+//            if let json = json {
+//                self.movies = json["movies"] as? [NSDictionary]
+//                self.tableView.reloadData()
+//            }
+//        }
+//        SwiftSpinner.hide()
+        refresh(self)
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+        
+        // Pull to Refresh
+        self.refreshControl = UIRefreshControl()
+        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.tableView.addSubview(refreshControl)
+        
+    }
+    
+    func showSpinner(spinnerText: String){
+        SwiftSpinner.show(spinnerText)
+    }
+    func hideSpinner() {
+        SwiftSpinner.hide()
+    }
+    
+    func refresh(sender:AnyObject) {
         let tomatoesMoviesURL = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
         let request = NSURLRequest(URL: tomatoesMoviesURL)
         
-        SwiftSpinner.show("Loading movies...")
+        showSpinner("Loading movies...")
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
             let json = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary
             
             if let json = json {
                 self.movies = json["movies"] as? [NSDictionary]
+                // For the sake of demonstrating the spinner, this timer sleeps for 1 second to emulate downloading network data before reloading the table data. Comment out this line and uncomment the hideSpinner() after it to remove the demo.
+                NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "hideSpinner", userInfo: nil, repeats: false)
+                //hideSpinner()
                 self.tableView.reloadData()
             }
         }
-        SwiftSpinner.hide()
+
         
-        tableView.dataSource = self
-        tableView.delegate = self
-        
+        self.refreshControl?.endRefreshing()
     }
     
     override func viewDidAppear(animated: Bool) {
