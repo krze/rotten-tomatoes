@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		649B55591B9216A8009DD37E /* MovieDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 649B55581B9216A8009DD37E /* MovieDetailsViewController.swift */; };
 		64BB3BF51B8FE6D400606BEF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BB3BF41B8FE6D400606BEF /* AppDelegate.swift */; };
 		64BB3BFA1B8FE6D400606BEF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 64BB3BF81B8FE6D400606BEF /* Main.storyboard */; };
 		64BB3BFC1B8FE6D400606BEF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 64BB3BFB1B8FE6D400606BEF /* Images.xcassets */; };
@@ -30,6 +31,7 @@
 /* Begin PBXFileReference section */
 		25FAC4C908F049A07D218966 /* libPods-rotten tomatoes.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-rotten tomatoes.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		64531F131B8FFCB2001427CD /* rotten tomatoes-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "rotten tomatoes-Bridging-Header.h"; sourceTree = "<group>"; };
+		649B55581B9216A8009DD37E /* MovieDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieDetailsViewController.swift; sourceTree = "<group>"; };
 		64BB3BEF1B8FE6D400606BEF /* rotten tomatoes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "rotten tomatoes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		64BB3BF31B8FE6D400606BEF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		64BB3BF41B8FE6D400606BEF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				64BB3C141B8FEF7600606BEF /* MoviesViewController.swift */,
+				649B55581B9216A8009DD37E /* MovieDetailsViewController.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				649B55591B9216A8009DD37E /* MovieDetailsViewController.swift in Sources */,
 				64BB3BF51B8FE6D400606BEF /* AppDelegate.swift in Sources */,
 				64BB3C151B8FEF7600606BEF /* MoviesViewController.swift in Sources */,
 				64BB3C191B8FF79E00606BEF /* MovieCell.swift in Sources */,
