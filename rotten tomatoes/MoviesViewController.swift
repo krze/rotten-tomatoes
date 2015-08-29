@@ -72,7 +72,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 self.movies = json["movies"] as? [NSDictionary]
                 self.tableView.reloadData()
                 self.refreshControl?.endRefreshing()
-            } else {
+            }
+            
+            if let error = error {
                 NSTimer.scheduledTimerWithTimeInterval(3.0, target: self, selector: Selector("displayRefreshError"), userInfo: nil, repeats: false)
                 self.refreshControl?.endRefreshing()
             }
