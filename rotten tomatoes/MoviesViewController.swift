@@ -46,11 +46,12 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         self.refreshErrorTextView = UITextView(frame: self.refreshControl!.bounds)
 
       // Add the text and change the color
-        self.refreshErrorTextView.text = "Error Communicating with the Server\nPlease try again later."
+        self.refreshErrorTextView.text = "Error communicating with the server!\nPlease try again later."
         self.refreshErrorTextView.textColor = UIColor.whiteColor()
         self.refreshErrorTextView.textAlignment = .Center
+        self.refreshErrorTextView.textContainer.maximumNumberOfLines = 0
         self.refreshErrorTextView.backgroundColor = UIColor.clearColor()
-        self.refreshErrorTextView.font = UIFont(name: "Avenir", size:12)!
+        self.refreshErrorTextView.font = UIFont(name: "Avenir", size:15)!
         self.refreshErrorView.addSubview(self.refreshErrorTextView)
         
         // Ensure it stays inside the pull to refresh view
