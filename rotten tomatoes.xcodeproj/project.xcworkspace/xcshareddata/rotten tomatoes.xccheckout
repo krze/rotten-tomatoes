@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>0C5057FA-0617-46B5-9846-35AF22EE2DAB</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>rotten tomatoes</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>8BA4EE37CB08BFB20FA0D8C7ED25830EF102CEC3</key>
 		<string>https://github.com/krze/rotten-tomatoes.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>rotten tomatoes.xcodeproj/project.xcworkspace</string>
+	<string>rotten tomatoes.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>8BA4EE37CB08BFB20FA0D8C7ED25830EF102CEC3</key>

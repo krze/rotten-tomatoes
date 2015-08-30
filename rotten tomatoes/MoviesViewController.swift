@@ -15,11 +15,12 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     var movies: [NSDictionary]?
     var refreshControl: UIRefreshControl!
     
-    var refreshErrorView: UIView!
-    var refreshErrorTextView: UITextView!
+    @IBOutlet weak var refreshErrorView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.refreshErrorView.alpha = 0.0
         
         // Set up pull to refresh and refresh on load
         setupRefreshControl()
@@ -40,44 +41,32 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func displayRefreshError() {
-        // Create the error view and set the color to red
-        self.refreshErrorView = UIView(frame: self.refreshControl!.bounds)
-        self.refreshErrorView.backgroundColor = UIColor.redColor()
-        self.refreshErrorTextView = UITextView(frame: self.refreshControl!.bounds)
-
-      // Add the text and change the color
-        self.refreshErrorTextView.text = "Error communicating with the server!\nPlease try again later."
-        self.refreshErrorTextView.textColor = UIColor.whiteColor()
-        self.refreshErrorTextView.textAlignment = .Center
-        self.refreshErrorTextView.textContainer.maximumNumberOfLines = 0
-        self.refreshErrorTextView.backgroundColor = UIColor.clearColor()
-        self.refreshErrorTextView.font = UIFont(name: "Avenir", size:15)!
-        self.refreshErrorView.addSubview(self.refreshErrorTextView)
-        
-        // Ensure it stays inside the pull to refresh view
-        self.refreshErrorView.clipsToBounds = true
-        self.refreshControl!.addSubview(self.refreshErrorView)
+        UIView.animateWithDuration(0.5, delay: 0.1, options: UIViewAnimationOptions.CurveEaseInOut, animations: { self.refreshErrorView.alpha = 1.0 }, completion: {(finished: Bool) -> Void in
+            UIView.animateWithDuration(0.5, delay: 3.0, options: UIViewAnimationOptions.CurveEaseOut, animations: { self.refreshErrorView.alpha = 0.0 }, completion: nil)
+        })
     }
-    
-
     
     func refresh(sender:AnyObject) {
         let tomatoesMoviesURL = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
+//        let tomatoesMoviesURL = NSURL(string: "https://www.dfkljghsdflkghdsflkgjsdfgsdf.com")!
         let request = NSURLRequest(URL: tomatoesMoviesURL)
         
         
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response: NSURLResponse!, data: NSData!, error: NSError!) -> Void in
-            let json = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary
+//            println("Response: \(response)\n" + "Data: \(data)\n" + "Error: \(error)\n")
             
-            if let json = json {
-                self.movies = json["movies"] as? [NSDictionary]
-                self.tableView.reloadData()
+            if error != nil {
                 self.refreshControl?.endRefreshing()
-            }
-            
-            if let error = error {
-                NSTimer.scheduledTimerWithTimeInterval(3.0, target: self, selector: Selector("displayRefreshError"), userInfo: nil, repeats: false)
-                self.refreshControl?.endRefreshing()
+                self.displayRefreshError()
+            } else {
+                println("No errors here!")
+                let json = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as? NSDictionary
+                
+                if let json = json {
+                    self.movies = json["movies"] as? [NSDictionary]
+                    self.tableView.reloadData()
+                    self.refreshControl?.endRefreshing()
+                }
             }
         }
 
