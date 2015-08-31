@@ -111,9 +111,17 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         cell.titleLabel.text = movie["title"] as? String
         cell.synopsisLabel.text = movie["synopsis"] as? String
         
-        let url = NSURL(string: movie.valueForKeyPath("posters.thumbnail") as! String)!
-        println(url)
-        cell.posterView.setImageWithURL(url)
+        let thumbImageURL = NSURL(string: movie.valueForKeyPath("posters.thumbnail") as! String)!
+//        let thumbImageURL = NSURL(string: "http://www.skjdhghdsljkfghdsljkfghsldkjfghieusr.com/dkfgjhsdkjfg.jpg")!
+        let thumbImageURLRequest = NSURLRequest(URL: thumbImageURL)
+        let loadingImage = UIImage(named: "LoadingPhoto")
+//        println(url)
+//        cell.posterView.setImageWithURL(url)
+        cell.posterView.setImageWithURLRequest(thumbImageURLRequest, placeholderImage: loadingImage, success: { (request: NSURLRequest!, response: NSHTTPURLResponse!, image: UIImage!) -> Void in
+            cell.posterView.image = image
+            }) { (request: NSURLRequest!, response: NSHTTPURLResponse!, error: NSError!) -> Void in
+            cell.posterView.image = loadingImage
+        }
         
         return cell
     }
