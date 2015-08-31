@@ -115,12 +115,16 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 //        let thumbImageURL = NSURL(string: "http://www.skjdhghdsljkfghdsljkfghsldkjfghieusr.com/dkfgjhsdkjfg.jpg")!
         let thumbImageURLRequest = NSURLRequest(URL: thumbImageURL)
         let loadingImage = UIImage(named: "LoadingPhoto")
-//        println(url)
 //        cell.posterView.setImageWithURL(url)
         cell.posterView.setImageWithURLRequest(thumbImageURLRequest, placeholderImage: loadingImage, success: { (request: NSURLRequest!, response: NSHTTPURLResponse!, image: UIImage!) -> Void in
             cell.posterView.image = image
+            println("Success!")
+            println(response)
             }) { (request: NSURLRequest!, response: NSHTTPURLResponse!, error: NSError!) -> Void in
             cell.posterView.image = loadingImage
+            println("Failure!!")
+            println("\(error)\n")
+            println(response)
         }
         
         return cell
