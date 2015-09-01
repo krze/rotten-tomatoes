@@ -33,7 +33,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func setupRefreshControl() {
         // Pull to Refresh
         self.refreshControl = UIRefreshControl()
-        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh", attributes: [NSFontAttributeName: UIFont(name: "Avenir", size:12)!])
+//        self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh", attributes: [NSFontAttributeName: UIFont(name: "Avenir", size:12)!])
         self.refreshControl.tintColor = UIColor.orangeColor()
         self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
         self.tableView.addSubview(refreshControl)
@@ -80,7 +80,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         // Navbar Apearance Properties
         navigationBar?.barStyle = UIBarStyle.Black
         navigationBar?.tintColor = UIColor.orangeColor()
-        navigationBar?.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size:20)!]
+        navigationBar?.titleTextAttributes = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size:20)!, NSForegroundColorAttributeName:UIColor.orangeColor()]
         
         // Navbar Behavior Properties
         navigationController?.hidesBarsOnSwipe = true
@@ -105,11 +105,12 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
-        
         let movie = movies![indexPath.row]
         
         cell.titleLabel.text = movie["title"] as? String
         cell.synopsisLabel.text = movie["synopsis"] as? String
+        
+        cell.posterView.alpha = 0
 
         // Image downloading block
         // Initial variables. Uncomment the gibberish thumbImageURL and comment the working thumbImageURL to test failure state.
@@ -124,6 +125,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             hackhiResImageURL = hackhiResImageURL.stringByReplacingCharactersInRange(range, withString: "https://content6.flixster.com/")
             hiResImageURL = NSURL(string: hackhiResImageURL)!
         }
+        // end hack
         
         let thumbImageURLRequest = NSURLRequest(URL: thumbImageURL)
         let hiResImageURLRequest = NSURLRequest(URL: hiResImageURL)
@@ -135,6 +137,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             // If the request for the thumbnail is successful, sets the downloaded image as the poster view. Holds the image in a variable for the subsequent request to download the hi-res image
             let downloadedThumbImage = image
             cell.posterView.image = downloadedThumbImage
+            UIView.animateWithDuration(0.5, delay: 0.1, options: UIViewAnimationOptions.CurveEaseInOut, animations: { cell.posterView.alpha = 1.0 }, completion: nil)
             // Initiates another request to get the full image once the thumbnail is downloaded
             cell.posterView.setImageWithURLRequest(hiResImageURLRequest, placeholderImage: downloadedThumbImage, success: { (request: NSURLRequest!, response: NSHTTPURLResponse!, image: UIImage!) -> Void in
                 // If the request for the full image is successful, sets the downloaded full image as the poster view.
