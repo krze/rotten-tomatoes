@@ -8,19 +8,28 @@
 
 import UIKit
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var refreshErrorView: UIView!
     
     var movies: [NSDictionary]?
+    var moviesTitleArray:[String] = []
     var refreshControl: UIRefreshControl!
+    var searchActive : Bool = false
+    var filtered:[String] = []
     
-    @IBOutlet weak var refreshErrorView: UIView!
+    lazy var searchBar:UISearchBar = UISearchBar(frame: CGRectMake(0, 0, 200, 20))
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.refreshErrorView.alpha = 0.0
+        
+        searchBar.placeholder = "Search for Title"
+        var rightNavBarButton = UIBarButtonItem(customView:searchBar)
+        self.navigationItem.rightBarButtonItem = rightNavBarButton
         
         // Set up pull to refresh and refresh on load
         setupRefreshControl()
@@ -28,6 +37,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         tableView.dataSource = self
         tableView.delegate = self
+        searchBar.delegate = self
     }
     
     func setupRefreshControl() {
@@ -40,11 +50,43 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 
     }
     
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        searchActive = true;
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        searchActive = false;
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        filtered = moviesTitleArray.filter({ (text) -> Bool in
+            let tmp: NSString = text
+            let range = tmp.rangeOfString(searchText, options: NSStringCompareOptions.CaseInsensitiveSearch)
+            return range.location != NSNotFound
+        })
+        if(filtered.count == 0){
+            searchActive = false;
+        } else {
+            searchActive = true;
+        }
+        self.tableView.reloadData()
+    }
+    
     func displayRefreshError() {
         UIView.animateWithDuration(0.5, delay: 0.1, options: UIViewAnimationOptions.CurveEaseInOut, animations: { self.refreshErrorView.alpha = 1.0 }, completion: {(finished: Bool) -> Void in
             UIView.animateWithDuration(0.5, delay: 3.0, options: UIViewAnimationOptions.CurveEaseOut, animations: { self.refreshErrorView.alpha = 0.0 }, completion: nil)
         })
     }
+    
     
     func refresh(sender:AnyObject) {
         let tomatoesMoviesURL = NSURL(string: "https://gist.githubusercontent.com/timothy1ee/d1778ca5b944ed974db0/raw/489d812c7ceeec0ac15ab77bf7c47849f2d1eb2b/gistfile1.json")!
@@ -64,6 +106,12 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 
                 if let json = json {
                     self.movies = json["movies"] as? [NSDictionary]
+                    let movieTitles = json["movies"] as! [[String : AnyObject]]
+                    for movieTitle in movieTitles {
+                        let title = movieTitle["title"]! as! String
+                        self.moviesTitleArray.append(title)
+                    }
+                    println(self.moviesTitleArray)
                     self.tableView.reloadData()
                     self.refreshControl?.endRefreshing()
                 }
@@ -93,12 +141,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let movies = movies {
+            if(searchActive) {
+                return filtered.count
+            }
             return movies.count
-            
         } else {
             return 0
         }
     }
+
     
     // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
     // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
@@ -111,7 +162,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         cell.synopsisLabel.text = movie["synopsis"] as? String
         
         cell.posterView.alpha = 0
-
+        
         // Image downloading block
         // Initial variables. Uncomment the gibberish thumbImageURL and comment the working thumbImageURL to test failure state.
 //        let thumbImageURL = NSURL(string: "http://www.skjdhghdsljkfghdsljkfghsldkjfghieusr.com/dkfgjhsdkjfg.jpg")!
@@ -151,6 +202,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             }) { (request: NSURLRequest!, response: NSHTTPURLResponse!, error: NSError!) -> Void in
             // If the request for the thumbnail fails, set it as the loading image placeholder
             cell.posterView.image = placeholderImage
+        }
+        
+        // Searchbar logic. It doesn't assign the synopsis or image though, ran out of time to implement.
+        if(searchActive && searchBar.text != ""){
+            cell.titleLabel.text = filtered[indexPath.row]
+        } else {
+            cell.titleLabel.text = movie["title"] as? String
         }
         
         return cell
